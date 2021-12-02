@@ -1,0 +1,27 @@
+[Unit]
+Description=Tailscale node agent
+Documentation=https://tailscale.com/kb/
+Wants=network-pre.target
+After=network-pre.target
+StartLimitIntervalSec=0
+StartLimitBurst=0
+
+[Service]
+EnvironmentFile=/storage/.config/tailscale/bin/tailscaled.defaults
+ExecStartPre=/usr/bin/mkdir -p /var/lib/tailscale
+ExecStartPre=/bin/mount -o bind,rw /storage/.config/tailscale/state /var/lib/tailscale
+ExecStartPre=/storage/.config/tailscale/bin/tailscaled --cleanup
+ExecStart=/storage/.config/tailscale/bin/tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/run/tailscale/tailscaled.sock --port $PORT $FLAGS
+ExecStopPost=/storage/.config/tailscale/bin/tailscaled --cleanup
+ExecStopPost=/usr/bin/umount /var/log/tailscale
+
+
+Restart=on-failure
+
+RuntimeDirectory=tailscale
+RuntimeDirectoryMode=0755
+StateDirectory=tailscale
+StateDirectoryMode=0750
+
+[Install]
+WantedBy=multi-user.target
