@@ -11,7 +11,7 @@ As LibreELEC by default with Python 3.11 (as of 2023), you can use Ansible to ta
 2. Obtain Auth key from https://login.tailscale.com/admin/settings/keys
 3. Amend the `tailscale_auth_key` variable in `vars_file.yml` accordingly (including inventory.ini if you have more machines)
 4. Execute playbook against your LE host:
- `ansible-playbook -i <host>, --extra-vars "ansible_user=<ssh_username> ansible_password=<ssh_password>" -f libreelec-tailscale.yml`
+ `ansible-playbook -i <host>, --extra-vars "ansible_user=root ansible_password=libreelec" -f libreelec-tailscale.yml`
 
 ## TODO
 
