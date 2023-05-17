@@ -1,0 +1,33 @@
+---
+- name: Download and unpack Tailscale static package
+  hosts: your_target_hosts
+  gather_facts: false
+
+  tasks:
+    - name: Get latest version of Tailscale static package
+      uri:
+        url: https://pkgs.tailscale.com/stable/#static
+        return_content: yes
+        status_code: 200
+        headers:
+          Accept-Encoding: "gzip, deflate"
+      register: tailscale_package
+
+    - set_fact:
+        tailscale_version: "{{ tailscale_package.content | regex_findall('\\d+\\.\\d+\\.\\d+') | first }}"
+
+    - name: Download Tailscale static package for amd64
+      get_url:
+        url: "https://pkgs.tailscale.com/stable/tailscale_{{ tailscale_version }}_amd64.tgz"
+        dest: "/tmp/tailscale.tgz"
+
+    - name: Unpack Tailscale static package
+      unarchive:
+        src: "/tmp/tailscale.tgz"
+        dest: "/storage/.config/tailscale/"
+        remote_src: yes
+
+    - name: Remove temporary Tailscale archive
+      file:
+        path: "/tmp/tailscale.tgz"
+        state: absent
